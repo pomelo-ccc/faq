@@ -1,7 +1,7 @@
-
+import 'zone.js';
 import '@angular/compiler';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
 import { AppComponent } from './src/app.component';
 import { APP_ROUTES } from './src/app.routes';
@@ -10,8 +10,9 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZonelessChangeDetection(),
+    provideZoneChangeDetection(),
     provideRouter(APP_ROUTES, withHashLocation()),
+    provideHttpClient(),
     provideAnimations()
   ],
 }).catch((err) => console.error(err));

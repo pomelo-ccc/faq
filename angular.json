@@ -17,6 +17,7 @@
               "browser": "."
             },
             "browser": "index.tsx",
+            "index": "index.html",
             "tsConfig": "tsconfig.json"
           },
           "configurations": {
@@ -34,7 +35,7 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "port": 3000
+            "port": 4200
           },
           "configurations": {
             "production": {
