@@ -1,8 +1,10 @@
 
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FaqItem } from '../../models/faq.model';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { FaqService } from '../../services/faq.service';
 
 @Component({
   selector: 'app-faq-card',
@@ -12,9 +14,11 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FaqCardComponent {
+  authService = inject(AuthService);
+  private faqService = inject(FaqService);
+
   faqItem = input.required<FaqItem>();
 
-  // Map component types to colors (adjusted for Light/Dark mode visibility)
   componentColorClass = computed(() => {
       switch(this.faqItem().component) {
           case 'Form': return 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-400/10 border-emerald-200 dark:border-emerald-400/20';
@@ -24,4 +28,12 @@ export class FaqCardComponent {
           default: return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
       }
   });
+
+  deleteItem(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if(confirm('确定删除该词条吗？')) {
+        this.faqService.deleteFaq(this.faqItem().id).subscribe();
+    }
+  }
 }

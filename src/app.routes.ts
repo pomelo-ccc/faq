@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 import { FaqListComponent } from './components/faq-list/faq-list.component';
 import { FaqDetailComponent } from './components/faq-detail/faq-detail.component';
@@ -17,7 +18,12 @@ export const APP_ROUTES: Routes = [
   {
     path: 'contribute',
     component: ContributeComponent,
-    title: '贡献词条'
+    title: '新增词条'
+  },
+  {
+    path: 'edit/:id',
+    component: ContributeComponent,
+    title: '编辑词条'
   },
   {
     path: '**',

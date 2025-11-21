@@ -1,7 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FaqService } from '../../services/faq.service';
+import { FaqItem } from '../../models/faq.model';
 
 @Component({
   selector: 'app-contribute',
@@ -10,10 +13,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './contribute.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContributeComponent {
+export class ContributeComponent implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);
+  private faqService = inject(FaqService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   
-  copied = signal(false);
+  isEditMode = signal(false);
+  isSubmitting = signal(false);
+  editId = signal<string | null>(null);
 
   faqForm = this.fb.group({
     title: ['', Validators.required],
@@ -27,49 +35,71 @@ export class ContributeComponent {
     validationMethod: ['', Validators.required]
   });
 
-  private formValue$ = this.faqForm.valueChanges;
-  formValue = toSignal(this.formValue$);
-
-  generatedMarkdown = computed(() => {
-    const value = this.faqForm.getRawValue();
-    const tagsArr = value.tags ? value.tags.split(/[,，]/).map(t => t.trim()).filter(t => t) : [];
-    const formattedTags = JSON.stringify(tagsArr);
-    
-    let frontmatter = `---
-title: "[${value.component}] ${value.title}"
-component: ${value.component}
-version: ${value.version}
-tags: ${formattedTags}`;
-
-    if (value.errorCode) {
-      frontmatter += `\nerrorCode: ${value.errorCode}`;
+  ngOnInit() {
+    // Check for ID in route to enable Edit Mode
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+        this.isEditMode.set(true);
+        this.editId.set(id);
+        this.faqService.getFaqById(id).subscribe(item => {
+            this.faqForm.patchValue({
+                title: item.title,
+                component: item.component,
+                version: item.version,
+                tags: item.tags.join(', '),
+                errorCode: item.errorCode || '',
+                phenomenon: item.phenomenon,
+                solution: item.solution,
+                troubleshootingFlow: item.troubleshootingFlow,
+                validationMethod: item.validationMethod
+            });
+        });
     }
+  }
 
-    frontmatter += `\n---`;
+  onSubmit() {
+    if (this.faqForm.invalid) return;
+    
+    this.isSubmitting.set(true);
+    // Use strict typing for form value access
+    const formVal = this.faqForm.getRawValue();
+    
+    const tagsStr = formVal.tags || '';
+    const tagsArray = tagsStr.split(/[,，]/).map(t => t.trim()).filter(t => t.length > 0);
 
-    const content = `
-### 问题现象
-${value.phenomenon}
+    // Construct FaqItem safely
+    const payload: any = {
+        ...formVal,
+        tags: tagsArray,
+        summary: (formVal.phenomenon || '').substring(0, 100) + '...',
+        views: 0,
+        solveTimeMinutes: 10
+    };
 
-### 解决方案
-${value.solution}
-
-### 排查流程
-\`\`\`mermaid
-${value.troubleshootingFlow}
-\`\`\`
-
-### 验证方法
-${value.validationMethod}
-`;
-
-    return `${frontmatter}\n${content}`;
-  });
-
-  copyToClipboard() {
-    navigator.clipboard.writeText(this.generatedMarkdown()).then(() => {
-      this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 2000);
-    });
+    if (this.isEditMode() && this.editId()) {
+        // Update
+        this.faqService.updateFaq(this.editId()!, payload).subscribe({
+            next: () => {
+                alert('修改成功');
+                this.router.navigate(['/']);
+            },
+            error: (err) => {
+                console.error(err);
+                this.isSubmitting.set(false);
+            }
+        });
+    } else {
+        // Create
+        this.faqService.createFaq(payload).subscribe({
+            next: () => {
+                alert('发布成功');
+                this.router.navigate(['/']);
+            },
+            error: (err) => {
+                console.error(err);
+                this.isSubmitting.set(false);
+            }
+        });
+    }
   }
 }
