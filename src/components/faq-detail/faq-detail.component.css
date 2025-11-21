@@ -1,0 +1,5 @@
+
+/* Ensure mermaid diagrams are visible in dark mode */
+:host ::ng-deep .mermaid {
+  line-height: 1; /* Fix for potential line height issues */
+}

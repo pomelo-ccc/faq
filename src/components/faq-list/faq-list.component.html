@@ -1,0 +1,120 @@
+
+<div class="space-y-10 pb-10">
+    <!-- Hero Section -->
+    <div class="text-center py-8">
+        <h1 class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 tracking-tight drop-shadow-sm dark:drop-shadow-lg pb-2">
+            研发问题速查手册
+        </h1>
+        <p class="mt-4 text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+            极速定位 <span class="text-indigo-600 dark:text-indigo-400 font-semibold">Project</span>, <span class="text-purple-600 dark:text-purple-400 font-semibold">Backend</span>, <span class="text-pink-600 dark:text-pink-400 font-semibold">UI Components</span> 常见疑难杂症。
+        </p>
+    </div>
+
+    <!-- Search Area (Glass Effect) -->
+    <div class="relative group z-10">
+        <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-2xl blur opacity-20 dark:opacity-25 group-hover:opacity-40 dark:group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-6 p-8 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-2xl transition-colors duration-300">
+            <div>
+                <label for="error-code-lookup" class="block text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2">Error Code 速查</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <input id="error-code-lookup" type="text" [value]="errorCodeTerm()" (input)="onErrorCodeChange($event)" placeholder="输入错误码 (如 504, ASYNC_ERR)" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all">
+                </div>
+            </div>
+            <div>
+                <label for="keyword-search" class="block text-xs font-bold uppercase tracking-wider text-pink-600 dark:text-pink-400 mb-2">关键词搜索</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input id="keyword-search" type="text" [value]="searchTerm()" (input)="onSearchTermChange($event)" placeholder="搜索标题、现象或解决方案..." class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        <!-- Sidebar Filters -->
+        <aside class="lg:w-1/4 space-y-6 lg:sticky lg:top-4">
+            
+            <!-- Module Tabs -->
+            <div class="p-5 bg-white/60 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
+                <h3 class="text-sm font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider mb-4">模块分类</h3>
+                <div class="space-y-2 flex flex-col">
+                    <button (click)="setComponentTab('All')" 
+                        [class]="activeComponentTab() === 'All' ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-500/30 border-transparent' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-indigo-600 dark:hover:text-white border-transparent'"
+                        class="text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border flex items-center justify-between group">
+                        <span>全部模块</span>
+                        <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    </button>
+                    
+                    <button (click)="setComponentTab('Form')" 
+                         [class]="activeComponentTab() === 'Form' ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-teal-500/30 border-transparent' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-emerald-600 dark:hover:text-white border-transparent'"
+                        class="text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border flex items-center justify-between group">
+                        <span>Form 表单</span>
+                         <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    </button>
+
+                    <button (click)="setComponentTab('Table')" 
+                         [class]="activeComponentTab() === 'Table' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-cyan-500/30 border-transparent' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-blue-600 dark:hover:text-white border-transparent'"
+                        class="text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border flex items-center justify-between group">
+                        <span>Table 表格</span>
+                         <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    </button>
+
+                    <button (click)="setComponentTab('Project')" 
+                         [class]="activeComponentTab() === 'Project' ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30 border-transparent' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-orange-600 dark:hover:text-white border-transparent'"
+                        class="text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border flex items-center justify-between group">
+                        <span>Project 工程化</span>
+                         <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    </button>
+
+                    <button (click)="setComponentTab('Backend')" 
+                         [class]="activeComponentTab() === 'Backend' ? 'bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white shadow-lg shadow-purple-500/30 border-transparent' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-purple-600 dark:hover:text-white border-transparent'"
+                        class="text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border flex items-center justify-between group">
+                        <span>Backend 后端交互</span>
+                         <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tags Cloud -->
+            <div class="p-5 bg-white/60 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
+                 <h3 class="text-sm font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider mb-4">热门标签</h3>
+                 <div class="flex flex-wrap gap-2">
+                    @for (tag of allTags(); track tag) {
+                        <button (click)="toggleTag(tag)"
+                                [class]="selectedTags().has(tag) ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 font-bold' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-white'"
+                                class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-transparent">
+                            #{{ tag }}
+                        </button>
+                    }
+                 </div>
+            </div>
+        </aside>
+
+        <!-- FAQ List Grid -->
+        <div class="lg:w-3/4">
+            @if (filteredFaqs().length > 0) {
+            <div class="grid grid-cols-1 gap-5">
+                @for (faq of filteredFaqs(); track faq.id) {
+                <app-faq-card [faqItem]="faq"></app-faq-card>
+                }
+            </div>
+            } @else {
+            <div class="text-center py-20 px-6 bg-white/50 dark:bg-slate-800/30 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl transition-colors duration-300">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+                    <svg class="h-8 w-8 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-slate-900 dark:text-white">未找到相关问题</h3>
+                <p class="mt-2 text-slate-500 dark:text-slate-400">尝试切换模块或减少筛选条件</p>
+            </div>
+            }
+        </div>
+    </div>
+</div>

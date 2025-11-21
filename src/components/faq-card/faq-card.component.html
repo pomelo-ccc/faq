@@ -1,0 +1,46 @@
+
+@if (faqItem()) {
+<a [routerLink]="['/faq', faqItem().id]" class="group relative block bg-white dark:bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl border border-slate-200 dark:border-slate-700/50 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-300 overflow-hidden shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none">
+    <!-- Glow effect on hover (Dark mode primarily, subtle in light mode) -->
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 dark:via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out pointer-events-none"></div>
+    
+    <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4 relative z-10">
+        <div class="flex-1">
+            <div class="flex items-center gap-3 mb-3">
+                <span [class]="componentColorClass()" class="text-xs font-bold px-2.5 py-0.5 rounded border uppercase tracking-wider">
+                    {{ faqItem().component }}
+                </span>
+                @if(faqItem().errorCode) {
+                    <span class="text-xs font-mono text-red-600 dark:text-slate-400 bg-red-50 dark:bg-slate-900 px-2 py-0.5 rounded border border-red-100 dark:border-slate-700">
+                        {{ faqItem().errorCode }}
+                    </span>
+                }
+            </div>
+            
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{{ faqItem().title }}</h2>
+            <p class="mt-2 text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-2">{{ faqItem().summary }}</p>
+        </div>
+
+        <div class="flex-shrink-0 flex flex-row sm:flex-col gap-3 text-xs text-slate-500 sm:text-right border-t sm:border-t-0 sm:border-l border-slate-100 dark:border-slate-700 pt-3 sm:pt-0 sm:pl-4 min-w-[100px]">
+            <div class="flex items-center sm:justify-end" title="浏览量">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                {{ faqItem().views }}
+            </div>
+            <div class="flex items-center sm:justify-end" title="预计解决耗时">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                ~{{ faqItem().solveTimeMinutes }} min
+            </div>
+             <div class="flex items-center sm:justify-end" title="适用版本">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                v{{ faqItem().version }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex flex-wrap gap-2 relative z-10">
+        @for (tag of faqItem().tags; track tag) {
+        <span class="text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-white text-xs px-2 py-1 rounded bg-slate-50 dark:bg-transparent transition-colors">#{{ tag }}</span>
+        }
+    </div>
+</a>
+}
